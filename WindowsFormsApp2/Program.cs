@@ -5,12 +5,16 @@ using System.IO;
 using System.Linq;
 
 
-
-    [STAThread]
-    static void Main()
+namespace WindowsFormsApp2
+{
+    internal static class Program
     {
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new EmployeeForm());
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new EmployeeForm());
+        }
     }
 }

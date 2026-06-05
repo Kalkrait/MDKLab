@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp2
 {
-    public class EmployeeForm : Form
+    public partial class EmployeeForm : Form
     {
         private EmployeeManager employeeManager;
         private TextBox nameTextBox;
