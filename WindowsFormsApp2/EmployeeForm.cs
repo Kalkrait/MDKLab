@@ -1,189 +1,196 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp2
+namespace EMPmanager
 {
-    public partial class EmployeeForm : Form
+    public partial class EMPform : Form
     {
-        private EmployeeManager employeeManager;
-        private TextBox nameTextBox;
-        private TextBox positionTextBox;
-        private DateTimePicker hireDatePicker;
-        private DateTimePicker vacationStartPicker;
-        private DateTimePicker vacationEndPicker;
-        private Button addEmployeeButton;
-        private Button removeEmployeeButton;
-        private Button updateVacationButton;
-        private ListBox employeesListBox;
-        public EmployeeForm()
+        private EmployeeManager _employeeManager;
+
+        public EMPform()
         {
-            this.Text = "Управление сотрудниками";
-            this.Width = 600;
-            this.Height = 500;
-            nameTextBox = new TextBox
-            {
-                Location = new System.Drawing.Point(10, 10),
-                Width = 150,
-            };
-            positionTextBox = new TextBox
-            {
-                Location = new System.Drawing.Point(170, 10),
-                Width = 150,
-            };
-            hireDatePicker = new DateTimePicker
-            {
-                Location = new System.Drawing.Point(330, 10)
-            };
-            vacationStartPicker = new DateTimePicker
-            {
-                Location = new System.Drawing.Point(10, 40)
-            };
-            vacationEndPicker = new DateTimePicker
-            {
-                Location = new System.Drawing.Point(170, 40)
-            };
-            addEmployeeButton = new Button
-            {
-                Location = new System.Drawing.Point(10, 70),
-                Text = "Добавить",
-                Width = 100
-            };
-            addEmployeeButton.Click += AddEmployeeButton_Click;
-            removeEmployeeButton = new Button
-            {
-                Location = new System.Drawing.Point(120, 70),
-                Text = "Удалить",
-                Width = 100
-            };
-            removeEmployeeButton.Click += RemoveEmployeeButton_Click;
-            updateVacationButton = new Button
-            {
-                Location = new System.Drawing.Point(220, 70),
-                Text = "Обновить отпуск",
-                Width = 120
-            };
-            updateVacationButton.Click += UpdateVacationButton_Click;
-            employeesListBox = new ListBox
-            {
-                Location = new System.Drawing.Point(10, 100),
-                Width = 560,
-                Height = 250
-            };
-            this.Controls.Add(nameTextBox);
-            this.Controls.Add(positionTextBox);
-            this.Controls.Add(hireDatePicker);
-            this.Controls.Add(vacationStartPicker);
-            this.Controls.Add(vacationEndPicker);
-            this.Controls.Add(addEmployeeButton);
-            this.Controls.Add(removeEmployeeButton);
-            this.Controls.Add(updateVacationButton);
-            this.Controls.Add(employeesListBox);
-            employeeManager = new EmployeeManager();
+            InitializeComponent();
+            _employeeManager = new EmployeeManager();
             UpdateEmployeesList();
+            UpdateStatusBar();
         }
-        private void UpdateEmployeesList()
+
+        public void UpdateEmployeesList()
         {
             employeesListBox.Items.Clear();
-            foreach (var employee in employeeManager.Employees)
+            foreach (var employee in _employeeManager.Employees)
             {
-                string vacationStatus = employee.IsOnVacation ? "В отпуске" : "На работе";
-                employeesListBox.Items.Add($"{employee.Name} - {employee.Position} ({vacationStatus})");
+                employeesListBox.Items.Add(employee.ToString());
             }
+            UpdateStatusBar();
         }
+
+        private void UpdateStatusBar()
+        {
+            int count = _employeeManager.Employees.Count;
+            countLabel.Text = $"Сотрудников: {count}";
+
+            int onVacation = _employeeManager.Employees.Count(e => e.IsOnVacation);
+            statusLabel.Text = onVacation > 0
+                ? $"Готов к работе | В отпуске: {onVacation} чел."
+                : "Готов к работе";
+        }
+
         private void AddEmployeeButton_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(nameTextBox.Text) ||
-            string.IsNullOrEmpty(positionTextBox.Text))
-            {
-                MessageBox.Show("Заполните все поля!");
-                return;
-            }
-            DateTime hireDate = hireDatePicker.Value;
-            Employee newEmployee = new Employee(nameTextBox.Text, positionTextBox.Text,
-            hireDate);
             try
             {
-                employeeManager.AddEmployee(newEmployee);
+                if (string.IsNullOrWhiteSpace(nameTextBox.Text))
+                {
+                    MessageBox.Show("Заполните поле 'Имя сотрудника'!", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    nameTextBox.Focus();
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(positionTextBox.Text))
+                {
+                    MessageBox.Show("Заполните поле 'Должность'!", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    positionTextBox.Focus();
+                    return;
+                }
+
+                var newEmployee = new Employee(nameTextBox.Text.Trim(),
+                    positionTextBox.Text.Trim(), hireDatePicker.Value);
+
+                if (vacationStartPicker.Value <= vacationEndPicker.Value)
+                {
+                    newEmployee.VacationStart = vacationStartPicker.Value;
+                    newEmployee.VacationEnd = vacationEndPicker.Value;
+                }
+
+                _employeeManager.AddEmployee(newEmployee);
+
                 nameTextBox.Clear();
                 positionTextBox.Clear();
+
                 UpdateEmployeesList();
+                MessageBox.Show($"Сотрудник '{newEmployee.Name}' добавлен!", "Успех",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void RemoveEmployeeButton_Click(object sender, EventArgs e)
         {
-            if (employeesListBox.SelectedIndex == -1)
+            try
             {
-                MessageBox.Show("Выберите сотрудника для удаления!");
-                return;
-            }
-            string selectedItem = employeesListBox.SelectedItem.ToString();
-            string[] parts = selectedItem.Split(new[] { '-' }, StringSplitOptions.None);
-            if (parts.Length >= 2)
-            {
-                string name = parts[0].Trim();
-                string position = parts[1].Trim();
-                var employeeToRemove = employeeManager.Employees.Find(emp => emp.Name == name && emp.Position == position);
+                if (employeesListBox.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Выберите сотрудника для удаления!", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string selectedItem = employeesListBox.SelectedItem.ToString();
+                string name = selectedItem.Split('-')[0].Trim();
+
+                var employeeToRemove = _employeeManager.Employees.FirstOrDefault(emp => emp.Name == name);
+
                 if (employeeToRemove != null)
                 {
-                    try
+                    DialogResult result = MessageBox.Show(
+                        $"Удалить сотрудника '{employeeToRemove.Name}'?",
+                        "Подтверждение",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
                     {
-                        employeeManager.RemoveEmployee(employeeToRemove);
+                        _employeeManager.RemoveEmployee(employeeToRemove);
                         UpdateEmployeesList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
+                        MessageBox.Show("Сотрудник удален!", "Успех",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void UpdateVacationButton_Click(object sender, EventArgs e)
         {
-            if (employeesListBox.SelectedIndex == -1)
+            try
             {
-                MessageBox.Show("Выберите сотрудника для обновления отпуска!");
-                return;
-            }
-            string selectedItem = employeesListBox.SelectedItem.ToString();
-            string[] parts = selectedItem.Split(new[] { '-' }, StringSplitOptions.None);
-            if (parts.Length >= 2)
-            {
-                string name = parts[0].Trim();
-                string position = parts[1].Trim();
-                var employeeToUpdate = employeeManager.Employees.Find(emp => emp.Name == name && emp.Position == position);
+                if (employeesListBox.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Выберите сотрудника!", "Предупреждение",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string selectedItem = employeesListBox.SelectedItem.ToString();
+                string name = selectedItem.Split('-')[0].Trim();
+
+                var employeeToUpdate = _employeeManager.Employees.FirstOrDefault(emp => emp.Name == name);
+
                 if (employeeToUpdate != null)
                 {
-                    DateTime? vacationStart = vacationStartPicker.Value;
-                    DateTime? vacationEnd = vacationEndPicker.Value;
-                    if (vacationStart >= vacationEnd)
+                    if (vacationStartPicker.Value > vacationEndPicker.Value)
                     {
-                        MessageBox.Show("Дата начала должна быть раньше даты окончания!");
+                        MessageBox.Show("Дата начала не может быть позже даты окончания!", "Ошибка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    try
-                    {
-                        employeeManager.UpdateVacation(employeeToUpdate, vacationStart,
-                        vacationEnd);
-                        UpdateEmployeesList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
+
+                    _employeeManager.UpdateVacation(employeeToUpdate, vacationStartPicker.Value, vacationEndPicker.Value);
+                    UpdateEmployeesList();
+                    MessageBox.Show("Отпуск обновлен!", "Успех",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // СОХРАНЕНИЕ - только по кнопке
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _employeeManager.SaveToFile();
+                MessageBox.Show("Данные сохранены в файл 'employees.txt'!", "Успех",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ЗАГРУЗКА - только по кнопке
+        private void LoadButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _employeeManager.LoadFromFile();
+                UpdateEmployeesList();
+                MessageBox.Show("Данные загружены из файла 'employees.txt'!", "Успех",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
-
 }
