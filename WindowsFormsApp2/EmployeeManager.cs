@@ -2,87 +2,98 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WindowsFormsApp2
+namespace EMPmanager
 {
     public class EmployeeManager
     {
         public List<Employee> Employees { get; private set; }
+        private readonly string _filePath = "employees.txt";
+
         public EmployeeManager()
         {
             Employees = new List<Employee>();
-            LoadEmployees();
+            // НЕ загружаем автоматически!
         }
+
         public void AddEmployee(Employee employee)
         {
             if (employee == null)
-            {
                 throw new ArgumentNullException(nameof(employee));
-            }
+
             Employees.Add(employee);
-            SaveEmployees();
+            // НЕ сохраняем автоматически!
         }
+
         public void RemoveEmployee(Employee employee)
         {
             if (employee == null)
-            {
                 throw new ArgumentNullException(nameof(employee));
-            }
+
             Employees.Remove(employee);
-            SaveEmployees();
+            // НЕ сохраняем автоматически!
         }
-        public void UpdateVacation(Employee employee, DateTime? vacationStart, DateTime?
-        vacationEnd)
+
+        public void UpdateVacation(Employee employee, DateTime? vacationStart, DateTime? vacationEnd)
         {
             if (employee == null)
-            {
                 throw new ArgumentNullException(nameof(employee));
-            }
+
+            if (vacationStart.HasValue && vacationEnd.HasValue && vacationStart.Value > vacationEnd.Value)
+                throw new ArgumentException("Дата начала отпуска не может быть позже даты окончания");
+
             employee.VacationStart = vacationStart;
             employee.VacationEnd = vacationEnd;
-            SaveEmployees();
+            // НЕ сохраняем автоматически!
         }
-        private void SaveEmployees()
+
+        // Сохраняем ТОЛЬКО когда пользователь нажал кнопку "Сохранить"
+        public void SaveToFile()
         {
-            File.WriteAllLines("employees.txt", Employees.Select(e => $"{e.Name}|{e.Position}|{e.HireDate.ToString("yyyy-MM-dd")}|{e.VacationStart?.ToString("yyyy - MM - dd")}|{e.VacationEnd?.ToString("yyyy - MM - dd")}"));
-        }
-        private void LoadEmployees()
-        {
-            if (File.Exists("employees.txt"))
+            var lines = Employees.Select(e =>
             {
-                var lines = File.ReadAllLines("employees.txt");
-                foreach (var line in lines)
+                string vacationStartStr = e.VacationStart?.ToString("yyyy-MM-dd") ?? "";
+                string vacationEndStr = e.VacationEnd?.ToString("yyyy-MM-dd") ?? "";
+                return $"{e.Name}|{e.Position}|{e.HireDate:yyyy-MM-dd}|{vacationStartStr}|{vacationEndStr}";
+            });
+            File.WriteAllLines(_filePath, lines);
+        }
+
+        // Загружаем ТОЛЬКО когда пользователь нажал кнопку "Загрузить"
+        public void LoadFromFile()
+        {
+            Employees.Clear();
+
+            if (!File.Exists(_filePath))
+                return;
+
+            var lines = File.ReadAllLines(_filePath);
+            foreach (var line in lines)
+            {
+                var parts = line.Split('|');
+                if (parts.Length == 5 && DateTime.TryParse(parts[2], out DateTime hireDate))
                 {
-                    var parts = line.Split('|');
-                    if (parts.Length == 5)
+                    DateTime? vacationStart = null;
+                    DateTime? vacationEnd = null;
+
+                    if (!string.IsNullOrEmpty(parts[3]) && DateTime.TryParse(parts[3], out DateTime tempStart))
+                        vacationStart = tempStart;
+
+                    if (!string.IsNullOrEmpty(parts[4]) && DateTime.TryParse(parts[4], out DateTime tempEnd))
+                        vacationEnd = tempEnd;
+
+                    try
                     {
-                        DateTime hireDate;
-                        DateTime? vacationStart = null;
-                        DateTime? vacationEnd = null;
-                        if (DateTime.TryParse(parts[2], out hireDate))
+                        var employee = new Employee(parts[0], parts[1], hireDate)
                         {
-                            if (parts[3] != "")
-                            {
-                                if (DateTime.TryParse(parts[3], out DateTime temp))
-                                {
-                                    vacationStart = temp;
-                                }
-                            }
-                            if (parts[4] != "")
-                            {
-                                if (DateTime.TryParse(parts[4], out DateTime temp))
-                                {
-                                    vacationEnd = temp;
-                                }
-                            }
-                            Employees.Add(new Employee(parts[0], parts[1], hireDate)
-                            {
-                                VacationStart = vacationStart,
-                                VacationEnd = vacationEnd
-                            });
-                        }
+                            VacationStart = vacationStart,
+                            VacationEnd = vacationEnd
+                        };
+                        Employees.Add(employee);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // Пропускаем некорректные строки
                     }
                 }
             }

@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="UnitTestProject1/UnitTestProject1.csproj" />
-  <Project Path="WindowsFormsApp2/WindowsFormsApp2.csproj" />
+  <Project Path="UnitTestProject1/UnitTestProject1.csproj" Id="b114c2b6-b144-4c7f-976f-f05ee3a56ca2" />
+  <Project Path="WindowsFormsApp2/WindowsFormsApp2.csproj" Id="686f44ce-4b28-49ac-a2ff-90dc402b9567" />
 </Solution>

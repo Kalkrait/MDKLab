@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-
-namespace WindowsFormsApp2
+namespace EMPmanager
 {
     internal static class Program
     {
@@ -14,7 +10,7 @@ namespace WindowsFormsApp2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new EmployeeForm());
+            Application.Run(new EMPform());
         }
     }
 }
