@@ -13,7 +13,6 @@ namespace EMPmanager
         public EmployeeManager()
         {
             Employees = new List<Employee>();
-            // НЕ загружаем автоматически!
         }
 
         public void AddEmployee(Employee employee)
@@ -22,7 +21,6 @@ namespace EMPmanager
                 throw new ArgumentNullException(nameof(employee));
 
             Employees.Add(employee);
-            // НЕ сохраняем автоматически!
         }
 
         public void RemoveEmployee(Employee employee)
@@ -31,7 +29,6 @@ namespace EMPmanager
                 throw new ArgumentNullException(nameof(employee));
 
             Employees.Remove(employee);
-            // НЕ сохраняем автоматически!
         }
 
         public void UpdateVacation(Employee employee, DateTime? vacationStart, DateTime? vacationEnd)
@@ -44,10 +41,8 @@ namespace EMPmanager
 
             employee.VacationStart = vacationStart;
             employee.VacationEnd = vacationEnd;
-            // НЕ сохраняем автоматически!
         }
 
-        // Сохраняем ТОЛЬКО когда пользователь нажал кнопку "Сохранить"
         public void SaveToFile()
         {
             var lines = Employees.Select(e =>
@@ -59,7 +54,6 @@ namespace EMPmanager
             File.WriteAllLines(_filePath, lines);
         }
 
-        // Загружаем ТОЛЬКО когда пользователь нажал кнопку "Загрузить"
         public void LoadFromFile()
         {
             Employees.Clear();
