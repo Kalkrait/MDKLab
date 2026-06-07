@@ -7,11 +7,13 @@ namespace EMPmanager
     public partial class EMPform : Form
     {
         private EmployeeManager _employeeManager;
+        private VacationNotification _notification;
 
         public EMPform()
         {
             InitializeComponent();
             _employeeManager = new EmployeeManager();
+            _notification = new VacationNotification();
             UpdateEmployeesList();
             UpdateStatusBar();
         }
@@ -160,7 +162,6 @@ namespace EMPmanager
             }
         }
 
-        // СОХРАНЕНИЕ - только по кнопке
         private void SaveButton_Click(object sender, EventArgs e)
         {
             try
@@ -176,7 +177,6 @@ namespace EMPmanager
             }
         }
 
-        // ЗАГРУЗКА - только по кнопке
         private void LoadButton_Click(object sender, EventArgs e)
         {
             try
@@ -189,6 +189,22 @@ namespace EMPmanager
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при загрузке: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // НОВАЯ ФУНКЦИЯ: Уведомления об отпусках
+        private void NotifyButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string notifications = _notification.GetNotificationsText(_employeeManager.Employees, DateTime.Today);
+                MessageBox.Show(notifications, "📅 Уведомления об отпусках",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

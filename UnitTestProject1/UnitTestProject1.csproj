@@ -52,6 +52,7 @@
     <Compile Include="EmployeeManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EmployeeTest.cs" />
+    <Compile Include="VacationNotificationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

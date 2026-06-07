@@ -37,6 +37,7 @@
             this.updateVacationButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.loadButton = new System.Windows.Forms.Button();
+            this.notifyButton = new System.Windows.Forms.Button();
 
             // Список сотрудников
             this.employeesListBox = new System.Windows.Forms.ListBox();
@@ -196,7 +197,7 @@
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(350, 32);
             this.addButton.TabIndex = 0;
-            this.addButton.Text = "Добавить сотрудника";
+            this.addButton.Text = "➕ Добавить сотрудника";
             this.addButton.UseVisualStyleBackColor = false;
             this.addButton.Click += new System.EventHandler(this.AddEmployeeButton_Click);
             // 
@@ -210,7 +211,7 @@
             this.removeButton.Name = "removeButton";
             this.removeButton.Size = new System.Drawing.Size(350, 32);
             this.removeButton.TabIndex = 1;
-            this.removeButton.Text = "Удалить сотрудника";
+            this.removeButton.Text = "🗑️ Удалить сотрудника";
             this.removeButton.UseVisualStyleBackColor = false;
             this.removeButton.Click += new System.EventHandler(this.RemoveEmployeeButton_Click);
             // 
@@ -224,7 +225,7 @@
             this.updateVacationButton.Name = "updateVacationButton";
             this.updateVacationButton.Size = new System.Drawing.Size(350, 32);
             this.updateVacationButton.TabIndex = 2;
-            this.updateVacationButton.Text = "Обновить отпуск";
+            this.updateVacationButton.Text = "📅 Обновить отпуск";
             this.updateVacationButton.UseVisualStyleBackColor = false;
             this.updateVacationButton.Click += new System.EventHandler(this.UpdateVacationButton_Click);
             // 
@@ -232,9 +233,10 @@
             // 
             this.bottomPanel.Controls.Add(this.saveButton);
             this.bottomPanel.Controls.Add(this.loadButton);
+            this.bottomPanel.Controls.Add(this.notifyButton);
             this.bottomPanel.Location = new System.Drawing.Point(12, 384);
             this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(370, 45);
+            this.bottomPanel.Size = new System.Drawing.Size(370, 115);
             this.bottomPanel.TabIndex = 3;
             // 
             // saveButton
@@ -245,9 +247,9 @@
             this.saveButton.ForeColor = System.Drawing.Color.White;
             this.saveButton.Location = new System.Drawing.Point(10, 6);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(170, 32);
+            this.saveButton.Size = new System.Drawing.Size(350, 32);
             this.saveButton.TabIndex = 0;
-            this.saveButton.Text = "Сохранить";
+            this.saveButton.Text = "💾 Сохранить в файл";
             this.saveButton.UseVisualStyleBackColor = false;
             this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
@@ -257,13 +259,27 @@
             this.loadButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.loadButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.loadButton.ForeColor = System.Drawing.Color.White;
-            this.loadButton.Location = new System.Drawing.Point(190, 6);
+            this.loadButton.Location = new System.Drawing.Point(10, 44);
             this.loadButton.Name = "loadButton";
-            this.loadButton.Size = new System.Drawing.Size(170, 32);
+            this.loadButton.Size = new System.Drawing.Size(350, 32);
             this.loadButton.TabIndex = 1;
-            this.loadButton.Text = "Загрузить";
+            this.loadButton.Text = "📂 Загрузить из файла";
             this.loadButton.UseVisualStyleBackColor = false;
             this.loadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // notifyButton
+            // 
+            this.notifyButton.BackColor = System.Drawing.Color.FromArgb(241, 196, 15);
+            this.notifyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.notifyButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.notifyButton.ForeColor = System.Drawing.Color.White;
+            this.notifyButton.Location = new System.Drawing.Point(10, 82);
+            this.notifyButton.Name = "notifyButton";
+            this.notifyButton.Size = new System.Drawing.Size(350, 32);
+            this.notifyButton.TabIndex = 2;
+            this.notifyButton.Text = "🔔 Проверить уведомления об отпусках";
+            this.notifyButton.UseVisualStyleBackColor = false;
+            this.notifyButton.Click += new System.EventHandler(this.NotifyButton_Click);
             // 
             // employeesListBox
             // 
@@ -272,7 +288,7 @@
             this.employeesListBox.ItemHeight = 15;
             this.employeesListBox.Location = new System.Drawing.Point(400, 12);
             this.employeesListBox.Name = "employeesListBox";
-            this.employeesListBox.Size = new System.Drawing.Size(380, 379);
+            this.employeesListBox.Size = new System.Drawing.Size(380, 484);
             this.employeesListBox.TabIndex = 4;
             // 
             // statusLabel
@@ -280,7 +296,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.statusLabel.ForeColor = System.Drawing.Color.Black;
-            this.statusLabel.Location = new System.Drawing.Point(12, 440);
+            this.statusLabel.Location = new System.Drawing.Point(12, 515);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(83, 15);
             this.statusLabel.TabIndex = 5;
@@ -291,7 +307,7 @@
             this.countLabel.AutoSize = true;
             this.countLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.countLabel.ForeColor = System.Drawing.Color.Black;
-            this.countLabel.Location = new System.Drawing.Point(680, 440);
+            this.countLabel.Location = new System.Drawing.Point(680, 515);
             this.countLabel.Name = "countLabel";
             this.countLabel.Size = new System.Drawing.Size(80, 15);
             this.countLabel.TabIndex = 6;
@@ -300,7 +316,7 @@
             // EMPform
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 470);
+            this.ClientSize = new System.Drawing.Size(800, 550);
             this.Controls.Add(this.countLabel);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.employeesListBox);
@@ -312,7 +328,7 @@
             this.MaximizeBox = false;
             this.Name = "EMPform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Управление сотрудниками";
+            this.Text = "Управление сотрудниками - Кадровый учёт";
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -340,6 +356,7 @@
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button loadButton;
+        private System.Windows.Forms.Button notifyButton;
 
         private System.Windows.Forms.ListBox employeesListBox;
 
