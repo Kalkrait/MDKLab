@@ -15,7 +15,6 @@ namespace EMPmanager
             _employeeManager = new EmployeeManager();
             _notification = new VacationNotification();
             UpdateEmployeesList();
-            UpdateStatusBar();
         }
 
         public void UpdateEmployeesList()
@@ -25,18 +24,6 @@ namespace EMPmanager
             {
                 employeesListBox.Items.Add(employee.ToString());
             }
-            UpdateStatusBar();
-        }
-
-        private void UpdateStatusBar()
-        {
-            int count = _employeeManager.Employees.Count;
-            countLabel.Text = $"Сотрудников: {count}";
-
-            int onVacation = _employeeManager.Employees.Count(e => e.IsOnVacation);
-            statusLabel.Text = onVacation > 0
-                ? $"Готов к работе | В отпуске: {onVacation} чел."
-                : "Готов к работе";
         }
 
         private void AddEmployeeButton_Click(object sender, EventArgs e)
@@ -45,7 +32,7 @@ namespace EMPmanager
             {
                 if (string.IsNullOrWhiteSpace(nameTextBox.Text))
                 {
-                    MessageBox.Show("Заполните поле 'Имя сотрудника'!", "Предупреждение",
+                    MessageBox.Show("Заполните поле 'Имя сотрудника'!", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     nameTextBox.Focus();
                     return;
@@ -53,7 +40,7 @@ namespace EMPmanager
 
                 if (string.IsNullOrWhiteSpace(positionTextBox.Text))
                 {
-                    MessageBox.Show("Заполните поле 'Должность'!", "Предупреждение",
+                    MessageBox.Show("Заполните поле 'Должность'!", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     positionTextBox.Focus();
                     return;
@@ -90,7 +77,7 @@ namespace EMPmanager
             {
                 if (employeesListBox.SelectedIndex == -1)
                 {
-                    MessageBox.Show("Выберите сотрудника для удаления!", "Предупреждение",
+                    MessageBox.Show("Выберите сотрудника для удаления!", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -130,7 +117,7 @@ namespace EMPmanager
             {
                 if (employeesListBox.SelectedIndex == -1)
                 {
-                    MessageBox.Show("Выберите сотрудника!", "Предупреждение",
+                    MessageBox.Show("Выберите сотрудника!", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -167,12 +154,12 @@ namespace EMPmanager
             try
             {
                 _employeeManager.SaveToFile();
-                MessageBox.Show("Данные сохранены в файл 'employees.txt'!", "Успех",
+                MessageBox.Show("Данные сохранены в файл!", "Успех",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -183,24 +170,21 @@ namespace EMPmanager
             {
                 _employeeManager.LoadFromFile();
                 UpdateEmployeesList();
-                MessageBox.Show("Данные загружены из файла 'employees.txt'!", "Успех",
+                MessageBox.Show("Данные загружены из файла!", "Успех",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // НОВАЯ ФУНКЦИЯ: Уведомления об отпусках
         private void NotifyButton_Click(object sender, EventArgs e)
         {
             try
             {
-                string notifications = _notification.GetNotificationsText(_employeeManager.Employees, DateTime.Today);
-                MessageBox.Show(notifications, "📅 Уведомления об отпусках",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _notification.ShowNotifications(_employeeManager.Employees, DateTime.Today);
             }
             catch (Exception ex)
             {
